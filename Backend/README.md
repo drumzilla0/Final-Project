@@ -268,6 +268,8 @@ npm test
 2. Initialize database: `node src/config/initDatabase.js`
 3. Start server: `npm start`
 
+> If Node is not available in your PATH on Windows, use `npm run start-win` instead.
+
 ## Contributing
 
 Follow these guidelines:

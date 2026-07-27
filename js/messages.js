@@ -12,6 +12,16 @@
   window.SSMSMessages = {
     activeRecipientId: null,
 
+    escapeHTML: function(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    },
+
     renderMessagingPortal: function(containerId) {
       const container = document.getElementById(containerId);
       if (!container) return;
@@ -53,14 +63,14 @@
       } else {
         recipientList.forEach(rec => {
           const isActive = rec.id === this.activeRecipientId;
-          const initials = rec.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          const initials = this.escapeHTML(rec.name).split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
           html += `
             <div class="chat-contact-item ${isActive ? 'active' : ''}" onclick="window.SSMSMessages.selectRecipient('${rec.id}')">
               <div class="user-avatar" style="width: 36px; height: 36px; font-size: 0.85rem; flex-shrink: 0;">${initials}</div>
               <div style="overflow: hidden; flex: 1;">
-                <div style="font-weight: 700; font-size: 0.88rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; color: var(--text-dark);">${rec.name}</div>
-                <div style="font-size: 0.75rem; color: var(--accent-orange); text-transform: capitalize;">${rec.role}</div>
+                <div style="font-weight: 700; font-size: 0.88rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; color: var(--text-dark);">${this.escapeHTML(rec.name)}</div>
+                <div style="font-size: 0.75rem; color: var(--accent-orange); text-transform: capitalize;">${this.escapeHTML(rec.role)}</div>
               </div>
             </div>
           `;
@@ -93,11 +103,11 @@
           <div style="padding: 16px 24px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; background: #F8FAFC;">
             <div style="display: flex; align-items: center; gap: 12px;">
               <div class="user-avatar" style="background: var(--primary-blue); color: white;">
-                ${activeRecipient.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                ${this.escapeHTML(activeRecipient.name).split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
               </div>
               <div>
-                <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-blue);">${activeRecipient.name}</h4>
-                <p style="font-size: 0.78rem; color: var(--text-muted);">${activeRecipient.role.toUpperCase()} | ${activeRecipient.email}</p>
+                <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-blue);">${this.escapeHTML(activeRecipient.name)}</h4>
+                <p style="font-size: 0.78rem; color: var(--text-muted);">${this.escapeHTML(activeRecipient.role.toUpperCase())} | ${this.escapeHTML(activeRecipient.email)}</p>
               </div>
             </div>
             <span class="stage-badge badge-approved" style="font-size: 0.75rem;">Connected Channel</span>
@@ -120,10 +130,10 @@
               <div class="chat-bubble-wrapper ${isMine ? 'mine' : 'theirs'}">
                 <div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">
                   <div style="font-weight: 700; font-size: 0.75rem; margin-bottom: 4px; opacity: 0.9;">
-                    ${msg.senderName} (${msg.senderRole.toUpperCase()})
+                    ${this.escapeHTML(msg.senderName)} (${this.escapeHTML(msg.senderRole.toUpperCase())})
                   </div>
-                  <div>${msg.text}</div>
-                  <div class="chat-timestamp">${msg.timestamp}</div>
+                  <div>${this.escapeHTML(msg.text)}</div>
+                  <div class="chat-timestamp">${this.escapeHTML(msg.timestamp)}</div>
                 </div>
               </div>
             `;
@@ -136,7 +146,7 @@
           <!-- CHAT INPUT COMPOSER -->
           <div style="padding: 16px 24px; border-top: 1px solid #E2E8F0; background: #F8FAFC;">
             <form id="sendMessageForm" style="display: flex; gap: 12px;">
-              <input type="text" id="chatMessageInput" class="form-control" placeholder="Type your message to ${activeRecipient.name}..." required style="flex: 1;">
+              <input type="text" id="chatMessageInput" class="form-control" placeholder="Type your message to ${this.escapeHTML(activeRecipient.name)}..." required style="flex: 1;">
               <button type="submit" class="btn btn-accent" style="white-space: nowrap;">
                 Send Message 📤
               </button>

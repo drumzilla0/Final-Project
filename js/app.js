@@ -10,30 +10,46 @@
   'use strict';
 
   window.SSMSApp = {
-    init: function() {
-      this.checkSessionAndRender();
+    init: async function() {
+      await this.checkSessionAndRender();
       this.setupGlobalEventListeners();
     },
 
-    checkSessionAndRender: function() {
-      const currentUser = window.SSMSAuth.getCurrentUser();
+    escapeHTML: function(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    },
+
+    checkSessionAndRender: async function() {
       const loginOverlay = document.getElementById('loginOverlay');
       const appContainer = document.getElementById('appShellContainer');
+      let currentUser = window.SSMSAuth.getCurrentUser();
+
+      if (window.SSMSAuth.getToken()) {
+        const valid = await window.SSMSAuth.validateSession();
+        if (valid) {
+          currentUser = window.SSMSAuth.getCurrentUser();
+        } else {
+          currentUser = null;
+        }
+      }
 
       if (!currentUser) {
-        // Show Login Page Only (Front View hides roster & dashboard)
         if (loginOverlay) loginOverlay.style.display = 'flex';
         if (appContainer) appContainer.style.display = 'none';
         this.renderLoginScreen();
       } else {
-        // User Authenticated: Show Dashboard Shell
         if (loginOverlay) loginOverlay.style.display = 'none';
         if (appContainer) appContainer.style.display = 'flex';
         
         this.renderSidebar(currentUser);
         this.renderHeader(currentUser);
 
-        // Default initial tab based on role
         if (currentUser.role === 'admin') {
           this.switchView('admin');
         } else if (currentUser.role === 'supervisor') {
@@ -86,7 +102,7 @@
       const result = await window.SSMSAuth.login(email, password);
 
       if (!result.success) {
-        alert(result.message);
+        this.showNotification(result.message, 'error');
         return;
       }
 
@@ -110,7 +126,7 @@
             <form id="forcePasswordForm">
               <div class="form-group">
                 <label class="form-label">Logged In Account</label>
-                <input type="text" class="form-control" value="${tempUser.name} (${tempUser.email})" readonly style="font-weight:600; color:var(--primary-blue);">
+                <input type="text" class="form-control" value="${this.escapeHTML(tempUser.name)} (${this.escapeHTML(tempUser.email)})" readonly style="font-weight:600; color:var(--primary-blue);">
               </div>
               <div class="form-group">
                 <label class="form-label">Create New Secret Password</label>
@@ -137,12 +153,12 @@
 
         const res = await window.SSMSAuth.forceCreateNewPassword(tempUser.id, newP, confP);
         if (!res.success) {
-          alert(res.message);
+          this.showNotification(res.message, 'error');
           return;
         }
 
         this.closeModal();
-        alert(`Success! Password created for ${tempUser.name}. Welcome to the SSMS Portal.`);
+        this.showNotification(`Success! Password created for ${this.escapeHTML(tempUser.name)}. Welcome to the SSMS Portal.`, 'success');
         this.checkSessionAndRender();
       });
     },
@@ -152,6 +168,8 @@
       const userBadge = document.getElementById('userBadgeContainer');
       if (!sidebarNav) return;
 
+      const escapedRole = this.escapeHTML(user.role);
+      const escapedName = this.escapeHTML(user.name);
       let navHtml = ``;
 
       if (user.role === 'student') {
@@ -209,13 +227,13 @@
 
       sidebarNav.innerHTML = navHtml;
 
-      const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      const initials = this.escapeHTML(user.name).split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
       userBadge.innerHTML = `
         <div class="user-badge">
           <div class="user-avatar">${initials}</div>
           <div class="user-info">
-            <div class="user-name">${user.name}</div>
-            <div class="user-role-tag">${user.role} portal</div>
+            <div class="user-name">${escapedName}</div>
+            <div class="user-role-tag">${escapedRole} portal</div>
           </div>
         </div>
         <button class="btn btn-outline btn-sm" style="width: 100%; border-color: rgba(255,255,255,0.4); color: white;" onclick="window.SSMSAuth.logout()">
@@ -227,8 +245,8 @@
     renderHeader: function(user) {
       const headerTitle = document.getElementById('headerTitle');
       const headerSubtitle = document.getElementById('headerSubtitle');
-      if (headerTitle) headerTitle.innerText = `Welcome, ${user.name}`;
-      if (headerSubtitle) headerSubtitle.innerText = `${user.department || 'Computer Science Department'} | SSMS Workspace`;
+      if (headerTitle) headerTitle.innerText = `Welcome, ${this.escapeHTML(user.name)}`;
+      if (headerSubtitle) headerSubtitle.innerText = `${this.escapeHTML(user.department || 'Computer Science Department')} | SSMS Workspace`;
     },
 
     switchView: function(viewName) {
@@ -293,9 +311,9 @@
         assignedStudents.forEach(std => {
           html += `
             <tr>
-              <td><strong>${std.matricNo || 'CSC/2026/001'}</strong></td>
-              <td><strong>${std.name}</strong></td>
-              <td>${std.projectTitle || 'Topic Pending'}</td>
+              <td><strong>${this.escapeHTML(std.matricNo || 'CSC/2026/001')}</strong></td>
+              <td><strong>${this.escapeHTML(std.name)}</strong></td>
+              <td>${this.escapeHTML(std.projectTitle || 'Topic Pending')}</td>
               <td>
                 <div style="display:flex; gap: 8px;">
                   <button class="btn btn-accent btn-sm" onclick="window.SSMSApp.switchView('tracker')">
@@ -342,16 +360,62 @@
       }
     },
 
+    confirmAction: function(message, onConfirm) {
+      const modalHtml = `
+        <div class="modal-card">
+          <div class="modal-header">
+            <div class="modal-title">Confirm action</div>
+            <button onclick="window.SSMSApp.closeModal()" style="background:none; color:white; font-size:1.4rem;">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p style="margin:0 0 20px;">${this.escapeHTML(message)}</p>
+            <div style="display:flex; justify-content:flex-end; gap: 10px;">
+              <button type="button" class="btn btn-outline" onclick="window.SSMSApp.closeModal()">Cancel</button>
+              <button type="button" class="btn btn-primary" id="confirmActionButton">Confirm</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      this.showCustomModal(modalHtml, false);
+      setTimeout(() => {
+        const confirmButton = document.getElementById('confirmActionButton');
+        if (confirmButton) {
+          confirmButton.addEventListener('click', () => {
+            this.closeModal();
+            onConfirm();
+          });
+        }
+      }, 0);
+    },
+
     closeModal: function() {
       const overlay = document.getElementById('globalModalOverlay');
       if (overlay) {
         overlay.classList.remove('active');
-        setTimeout(() => { overlay.innerHTML = ''; }, 200);
+        setTimeout(() => {
+          overlay.innerHTML = '';
+          overlay.onclick = null;
+        }, 200);
       }
     },
 
     showNotification: function(msg, type = 'info') {
-      alert(`[SSMS SYSTEM NOTIFICATION]\n\n${msg}`);
+      const existing = document.getElementById('ssmsNotificationBanner');
+      if (existing) existing.remove();
+
+      const banner = document.createElement('div');
+      banner.id = 'ssmsNotificationBanner';
+      banner.className = `notification-banner notification-${type}`;
+      banner.textContent = msg;
+      document.body.appendChild(banner);
+
+      setTimeout(() => {
+        banner.classList.add('dismissed');
+      }, 3000);
+      setTimeout(() => {
+        banner.remove();
+      }, 4000);
     },
 
     setupGlobalEventListeners: function() {

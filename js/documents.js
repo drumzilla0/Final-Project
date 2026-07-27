@@ -10,6 +10,16 @@
   'use strict';
 
   window.SSMSDocuments = {
+    escapeHTML: function(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    },
+
     renderVault: function(containerId) {
       const container = document.getElementById(containerId);
       if (!container) return;
@@ -92,22 +102,22 @@
             <div class="doc-header">
               <div class="doc-icon">${icon}</div>
               <div style="flex:1;">
-                <div class="doc-title">${doc.title}</div>
-                <div class="doc-meta">Category: <strong>${doc.category}</strong> (${doc.version})</div>
+                <div class="doc-title">${this.escapeHTML(doc.title)}</div>
+                <div class="doc-meta">Category: <strong>${this.escapeHTML(doc.category)}</strong> (${this.escapeHTML(doc.version)})</div>
               </div>
             </div>
             <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px;">
-              <strong>Sent by:</strong> ${doc.uploadedBy}<br>
-              <strong>Date:</strong> ${doc.uploadDate} | <strong>Size:</strong> ${doc.fileSize}
+              <strong>Sent by:</strong> ${this.escapeHTML(doc.uploadedBy)}<br>
+              <strong>Date:</strong> ${this.escapeHTML(doc.uploadDate)} | <strong>Size:</strong> ${this.escapeHTML(doc.fileSize)}
             </div>
             <div>
               <span class="doc-tag" style="background: ${statusColor}15; color: ${statusColor}; border: 1px solid ${statusColor};">
-                ${doc.status}
+                ${this.escapeHTML(doc.status)}
               </span>
             </div>
           </div>
           <div class="doc-actions">
-            <button class="btn btn-primary btn-sm" style="flex:1;" onclick="window.SSMSDocuments.downloadDoc('${doc.title}')">
+            <button class="btn btn-primary btn-sm" style="flex:1;" onclick="window.SSMSDocuments.downloadDoc('${doc.id}')">
               📥 Download
             </button>
             <button class="btn btn-outline btn-sm" onclick="window.SSMSDocuments.viewDetails('${doc.id}')">
@@ -225,8 +235,11 @@
       });
     },
 
-    downloadDoc: function(docTitle) {
-      alert(`[SSMS DOCUMENT VAULT]\n\nDownloading file: ${docTitle}\nSecurity verified. Transmission complete.`);
+    downloadDoc: function(docId) {
+      const docs = window.SSMSData.getDocs();
+      const doc = docs.find(d => d.id === docId);
+      if (!doc) return;
+      window.SSMSApp.showNotification(`Downloading ${this.escapeHTML(doc.title)}. Transmission simulated successfully.`, 'success');
     },
 
     viewDetails: function(docId) {
@@ -234,7 +247,27 @@
       const doc = docs.find(d => d.id === docId);
       if (!doc) return;
 
-      alert(`[DOCUMENT VAULT RECORD]\n\nTitle: ${doc.title}\nCategory: ${doc.category}\nUploaded By: ${doc.uploadedBy}\nUpload Date: ${doc.uploadDate}\nVersion: ${doc.version}\nStatus: ${doc.status}`);
+      const modalHtml = `
+        <div class="modal-card">
+          <div class="modal-header">
+            <div class="modal-title">📄 Document Details</div>
+            <button onclick="window.SSMSApp.closeModal()" style="background:none; color:white; font-size:1.4rem;">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div style="line-height: 1.65;">
+              <strong>Title:</strong> ${this.escapeHTML(doc.title)}<br>
+              <strong>Category:</strong> ${this.escapeHTML(doc.category)}<br>
+              <strong>Uploaded By:</strong> ${this.escapeHTML(doc.uploadedBy)}<br>
+              <strong>Upload Date:</strong> ${this.escapeHTML(doc.uploadDate)}<br>
+              <strong>Version:</strong> ${this.escapeHTML(doc.version)}<br>
+              <strong>Status:</strong> ${this.escapeHTML(doc.status)}<br>
+              <strong>Size:</strong> ${this.escapeHTML(doc.fileSize)}
+            </div>
+          </div>
+        </div>
+      `;
+
+      window.SSMSApp.showCustomModal(modalHtml);
     }
   };
 })();

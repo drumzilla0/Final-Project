@@ -10,6 +10,22 @@
   'use strict';
 
   window.SSMSAdmin = {
+    generateDefaultPassword: function(role) {
+      const base = role === 'supervisor' ? 'Sup' : 'Std';
+      const randomSuffix = Math.floor(Math.random() * 9000) + 1000;
+      return `${base}${randomSuffix}`;
+    },
+
+    escapeHTML: function(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    },
+
     renderAdminPanel: function(containerId) {
       const container = document.getElementById(containerId);
       if (!container) return;
@@ -83,10 +99,10 @@
           const assignedCount = students.filter(s => s.supervisorId === sup.id).length;
           html += `
             <tr>
-              <td><strong>${sup.name}</strong></td>
-              <td>${sup.email}</td>
-              <td>${sup.specialization || 'Computer Science'}</td>
-              <td><span class="cred-pill">${sup.passwordHash}</span></td>
+              <td><strong>${this.escapeHTML(sup.name)}</strong></td>
+              <td>${this.escapeHTML(sup.email)}</td>
+              <td>${this.escapeHTML(sup.specialization || 'Computer Science')}</td>
+              <td><span class="cred-pill">${sup.isDefaultPassword ? 'Default Password Active' : 'Password Changed'}</span></td>
               <td>
                 <span class="stage-badge ${sup.isDefaultPassword ? 'badge-revision' : 'badge-approved'}">
                   ${sup.isDefaultPassword ? 'No (Default)' : 'Yes (Secured)'}
@@ -137,12 +153,12 @@
 
           html += `
             <tr>
-              <td><strong>${std.matricNo || 'CSC/2026/001'}</strong></td>
-              <td><strong>${std.name}</strong></td>
-              <td>${std.email}</td>
-              <td style="max-width: 250px;">${std.projectTitle || 'Project Topic Under Review'}</td>
-              <td><span style="color: var(--primary-blue); font-weight:600;">${supName}</span></td>
-              <td><span class="cred-pill">${std.passwordHash}</span></td>
+              <td><strong>${this.escapeHTML(std.matricNo || 'CSC/2026/001')}</strong></td>
+              <td><strong>${this.escapeHTML(std.name)}</strong></td>
+              <td>${this.escapeHTML(std.email)}</td>
+              <td style="max-width: 250px;">${this.escapeHTML(std.projectTitle || 'Project Topic Under Review')}</td>
+              <td><span style="color: var(--primary-blue); font-weight:600;">${this.escapeHTML(supName)}</span></td>
+              <td><span class="cred-pill">${std.isDefaultPassword ? 'Default Password Active' : 'Password Changed'}</span></td>
               <td>
                 <span class="stage-badge ${std.isDefaultPassword ? 'badge-revision' : 'badge-approved'}">
                   ${std.isDefaultPassword ? 'Default' : 'Custom'}
@@ -199,17 +215,17 @@
         students.forEach(std => {
           const currentSup = supervisors.find(s => s.id === std.supervisorId);
           let supOptionsHtml = supervisors.map(s => 
-            `<option value="${s.id}" ${std.supervisorId === s.id ? 'selected' : ''}>${s.name} (${s.specialization || 'Computer Science'})</option>`
+            `<option value="${s.id}" ${std.supervisorId === s.id ? 'selected' : ''}>${this.escapeHTML(s.name)} (${this.escapeHTML(s.specialization || 'Computer Science')})</option>`
           ).join('');
 
           html += `
             <tr>
-              <td><strong>${std.matricNo || 'CSC/2026/001'}</strong></td>
-              <td><strong>${std.name}</strong></td>
-              <td style="max-width: 250px;">${std.projectTitle || 'Topic Pending'}</td>
+              <td><strong>${this.escapeHTML(std.matricNo || 'CSC/2026/001')}</strong></td>
+              <td><strong>${this.escapeHTML(std.name)}</strong></td>
+              <td style="max-width: 250px;">${this.escapeHTML(std.projectTitle || 'Topic Pending')}</td>
               <td>
                 <span class="stage-badge ${currentSup ? 'badge-approved' : 'badge-revision'}">
-                  ${currentSup ? currentSup.name : '⚠️ Unassigned'}
+                  ${currentSup ? this.escapeHTML(currentSup.name) : '⚠️ Unassigned'}
                 </span>
               </td>
               <td>
@@ -238,15 +254,15 @@
         html += `
           <div style="background: white; border: 1px solid #E2E8F0; border-radius: var(--radius-md); padding: 16px; box-shadow: var(--shadow-sm);">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-              <strong style="color: var(--primary-blue); font-size: 0.95rem;">${sup.name}</strong>
+              <strong style="color: var(--primary-blue); font-size: 0.95rem;">${this.escapeHTML(sup.name)}</strong>
               <span class="stage-badge badge-in-progress" style="font-size: 0.75rem;">${assignedStds.length} / ${sup.maxStudents || 5} Students</span>
             </div>
-            <div style="font-size: 0.8rem; color: var(--accent-orange); margin-bottom: 10px;">${sup.specialization || 'Computer Science'}</div>
+            <div style="font-size: 0.8rem; color: var(--accent-orange); margin-bottom: 10px;">${this.escapeHTML(sup.specialization || 'Computer Science')}</div>
             <div style="font-size: 0.82rem; color: var(--text-dark);">
               <strong>Assigned Students:</strong>
               ${assignedStds.length === 0 ? '<span style="color:var(--text-muted); display:block; margin-top:4px;">No students assigned yet.</span>' : `
                 <ul style="margin-top: 4px; padding-left: 16px; font-size: 0.8rem; color: var(--text-muted);">
-                  ${assignedStds.map(s => `<li>${s.name} (${s.matricNo || 'CSC/2026'})</li>`).join('')}
+                  ${assignedStds.map(s => `<li>${this.escapeHTML(s.name)} (${this.escapeHTML(s.matricNo || 'CSC/2026')})</li>`).join('')}
                 </ul>
               `}
             </div>
@@ -313,7 +329,7 @@
         window.SSMSData.saveUsers(users);
         const assignedSup = users.find(u => u.id === supervisorId);
         const supName = assignedSup ? assignedSup.name : 'Unassigned';
-        window.SSMSApp.showNotification(`Student ${student.name} allocated to ${supName}.`, 'success');
+        window.SSMSApp.showNotification(`Student ${window.SSMSApp.escapeHTML(student.name)} allocated to ${window.SSMSApp.escapeHTML(supName)}.`, 'success');
         this.renderAdminPanel('adminContentArea');
         this.switchAdminTab('allocation');
       }
@@ -341,9 +357,8 @@
                 <input type="text" id="supSpecInput" class="form-control" placeholder="e.g. Cybersecurity & Networks">
               </div>
               <div class="form-group">
-                <label class="form-label">Default Assigned Password</label>
-                <input type="text" id="supDefaultPassInput" class="form-control" value="super123" required readonly>
-                <span style="font-size:0.75rem; color:var(--text-muted);">Supervisor will be required to change this upon 1st login.</span>
+                <label class="form-label">Default Password Policy</label>
+                <div class="form-control" style="background: #f7f9fc; color: var(--text-dark);">A secure default password will be generated internally and the supervisor must change it on first login.</div>
               </div>
               <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
                 <button type="button" class="btn btn-outline" onclick="window.SSMSApp.closeModal()">Cancel</button>
@@ -361,11 +376,11 @@
         const name = document.getElementById('supNameInput').value;
         const email = document.getElementById('supEmailInput').value;
         const spec = document.getElementById('supSpecInput').value;
-        const defaultPass = document.getElementById('supDefaultPassInput').value;
+        const defaultPass = window.SSMSAdmin.generateDefaultPassword('supervisor');
 
         const users = window.SSMSData.getUsers();
         if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-          alert('A user with this email address already exists in the system.');
+          window.SSMSApp.showNotification('A user with this email address already exists in the system.', 'error');
           return;
         }
 
@@ -385,7 +400,7 @@
 
         window.SSMSApp.closeModal();
         window.SSMSAdmin.renderAdminPanel('adminContentArea');
-        window.SSMSApp.showNotification(`Supervisor ${name} added with default password '${defaultPass}'!`, 'success');
+        window.SSMSApp.showNotification(`Supervisor ${window.SSMSApp.escapeHTML(name)} added successfully. Default credentials have been provisioned securely.`, 'success');
       });
     },
 
@@ -415,8 +430,8 @@
                 <input type="text" id="stdTopicInput" class="form-control" placeholder="Design & Implementation of ..." required>
               </div>
               <div class="form-group">
-                <label class="form-label">Default Assigned Password</label>
-                <input type="text" id="stdDefaultPassInput" class="form-control" value="student123" required readonly>
+                <label class="form-label">Default Password Policy</label>
+                <div class="form-control" style="background: #f7f9fc; color: var(--text-dark);">A secure default password will be generated internally and the student must change it on first login.</div>
               </div>
               <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
                 <button type="button" class="btn btn-outline" onclick="window.SSMSApp.closeModal()">Cancel</button>
@@ -435,11 +450,11 @@
         const matric = document.getElementById('stdMatricInput').value;
         const email = document.getElementById('stdEmailInput').value;
         const topic = document.getElementById('stdTopicInput').value;
-        const defaultPass = document.getElementById('stdDefaultPassInput').value;
+        const defaultPass = window.SSMSAdmin.generateDefaultPassword('student');
 
         const currentUsers = window.SSMSData.getUsers();
         if (currentUsers.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-          alert('A user with this email address already exists in the system.');
+          window.SSMSApp.showNotification('A user with this email address already exists in the system.', 'error');
           return;
         }
 
@@ -460,7 +475,7 @@
 
         window.SSMSApp.closeModal();
         window.SSMSAdmin.renderAdminPanel('adminContentArea');
-        window.SSMSApp.showNotification(`Student ${name} registered successfully! Default pass: '${defaultPass}'`, 'success');
+        window.SSMSApp.showNotification(`Student ${window.SSMSApp.escapeHTML(name)} registered successfully. Default credentials are provisioned securely.`, 'success');
       });
     },
 
@@ -471,7 +486,7 @@
 
       const supervisors = users.filter(u => u.role === 'supervisor');
       let supOptionsHtml = supervisors.map(s => 
-        `<option value="${s.id}" ${s.id === student.supervisorId ? 'selected' : ''}>${s.name} (${s.specialization || 'Computer Science'})</option>`
+        `<option value="${s.id}" ${s.id === student.supervisorId ? 'selected' : ''}>${window.SSMSApp.escapeHTML(s.name)} (${window.SSMSApp.escapeHTML(s.specialization || 'Computer Science')})</option>`
       ).join('');
 
       const modalHtml = `
@@ -484,7 +499,7 @@
             <form id="assignSupervisorForm">
               <div class="form-group">
                 <label class="form-label">Student Name</label>
-                <input type="text" class="form-control" value="${student.name} (${student.matricNo || 'CSC/2026/001'})" readonly style="font-weight:600; color:var(--primary-blue);">
+                <input type="text" class="form-control" value="${window.SSMSApp.escapeHTML(student.name)} (${window.SSMSApp.escapeHTML(student.matricNo || 'CSC/2026/001')})" readonly style="font-weight:600; color:var(--primary-blue);">
               </div>
               <div class="form-group">
                 <label class="form-label">Select Academic Supervisor</label>
@@ -520,7 +535,7 @@
         window.SSMSAdmin.switchAdminTab('students');
         const assignedSup = currentUsers.find(u => u.id === selectedSupId);
         const supName = assignedSup ? assignedSup.name : 'Unassigned';
-        window.SSMSApp.showNotification(`Supervisor for ${student.name} set to ${supName}.`, 'success');
+        window.SSMSApp.showNotification(`Supervisor for ${window.SSMSApp.escapeHTML(student.name)} set to ${window.SSMSApp.escapeHTML(supName)}.`, 'success');
       });
     },
 
@@ -529,13 +544,13 @@
       const user = users.find(u => u.id === userId);
       if (!user) return;
 
-      if (confirm(`Reset password for ${user.name} back to default?`)) {
-        user.passwordHash = user.role === 'supervisor' ? 'super123' : 'student123';
+      window.SSMSApp.confirmAction(`Reset password for ${window.SSMSApp.escapeHTML(user.name)} back to default?`, () => {
+        user.passwordHash = window.SSMSAdmin.generateDefaultPassword(user.role);
         user.isDefaultPassword = true;
         window.SSMSData.saveUsers(users);
         window.SSMSAdmin.renderAdminPanel('adminContentArea');
-        alert(`Password for ${user.name} reset to default '${user.passwordHash}'. User will be forced to change it on next login.`);
-      }
+        window.SSMSApp.showNotification(`Password for ${window.SSMSApp.escapeHTML(user.name)} has been reset. User will be forced to change it on next login.`, 'info');
+      });
     }
   };
 })();

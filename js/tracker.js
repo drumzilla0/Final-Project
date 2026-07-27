@@ -10,6 +10,16 @@
   'use strict';
 
   window.SSMSTracker = {
+    escapeHTML: function(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    },
+
     calculateProgress: function(stages) {
       if (!stages || stages.length === 0) return 0;
       const approvedCount = stages.filter(s => s.status === 'approved').length;
@@ -116,12 +126,12 @@
             <div class="stage-info">
               <div class="stage-number">${iconSymbol}</div>
               <div class="stage-details">
-                <h4>${stage.name}</h4>
-                <p>${stage.description}</p>
+                <h4>${this.escapeHTML(stage.name)}</h4>
+                <p>${this.escapeHTML(stage.description)}</p>
                 ${stage.supervisorComment ? `
                   <div style="margin-top: 8px; padding: 8px 12px; background: rgba(0,76,132,0.05); border-left: 3px solid var(--primary-blue); border-radius: 4px; font-size: 0.83rem;">
-                    <strong>Supervisor Remark:</strong> "${stage.supervisorComment}"
-                    ${stage.dateUpdated ? `<span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 8px;">(${stage.dateUpdated})</span>` : ''}
+                    <strong>Supervisor Remark:</strong> "${this.escapeHTML(stage.supervisorComment)}"
+                    ${stage.dateUpdated ? `<span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 8px;">(${this.escapeHTML(stage.dateUpdated)})</span>` : ''}
                   </div>
                 ` : ''}
               </div>
@@ -154,7 +164,7 @@
       const modalHtml = `
         <div class="modal-card">
           <div class="modal-header">
-            <div class="modal-title">Update Stage: ${stage.name}</div>
+            <div class="modal-title">Update Stage: ${this.escapeHTML(stage.name)}</div>
             <button onclick="window.SSMSApp.closeModal()" style="background:none; color:white; font-size:1.4rem;">&times;</button>
           </div>
           <div class="modal-body">

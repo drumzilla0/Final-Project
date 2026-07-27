@@ -10,6 +10,16 @@
   'use strict';
 
   window.SSMSAppointments = {
+    escapeHTML: function(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    },
+
     renderAppointmentsPage: function(containerId) {
       const container = document.getElementById(containerId);
       if (!container) return;
@@ -79,25 +89,24 @@
         <div style="background: var(--pure-white); border: 2px solid #E2E8F0; border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-space-between;">
           <div>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-              <span class="stage-badge ${badgeClass}">${apt.status}</span>
-              <span style="font-size: 0.8rem; color: var(--text-muted);">ID: ${apt.id}</span>
+              <span class="stage-badge ${badgeClass}">${this.escapeHTML(apt.status)}</span>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">ID: ${this.escapeHTML(apt.id)}</span>
             </div>
 
             <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 8px;">
-              ${apt.topic}
+              ${this.escapeHTML(apt.topic)}
             </h4>
 
             <div style="font-size: 0.85rem; color: var(--text-dark); margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px;">
-              <div>👤 <strong>Student:</strong> ${apt.studentName}</div>
-              <div>🎓 <strong>Supervisor:</strong> ${apt.supervisorName}</div>
-              <div>📆 <strong>Date:</strong> <span style="color: var(--accent-orange); font-weight: 700;">${apt.requestedDate}</span></div>
-              <div>⏰ <strong>Time:</strong> <span style="font-weight: 700;">${apt.requestedTime}</span></div>
-              <div>📍 <strong>Venue / Link:</strong> ${apt.venue}</div>
-            </div>
+              <div>👤 <strong>Student:</strong> ${this.escapeHTML(apt.studentName)}</div>
+              <div>🎓 <strong>Supervisor:</strong> ${this.escapeHTML(apt.supervisorName)}</div>
+              <div>📆 <strong>Date:</strong> <span style="color: var(--accent-orange); font-weight: 700;">${this.escapeHTML(apt.requestedDate)}</span></div>
+              <div>⏰ <strong>Time:</strong> <span style="font-weight: 700;">${this.escapeHTML(apt.requestedTime)}</span></div>
+              <div>📍 <strong>Venue / Link:</strong> ${this.escapeHTML(apt.venue)}</div>
 
             ${apt.supervisorNote ? `
               <div style="margin-top: 10px; padding: 10px; background: var(--accent-orange-subtle); border-left: 3px solid var(--accent-orange); border-radius: 4px; font-size: 0.82rem; color: #8C4400;">
-                <strong>Supervisor Remark:</strong> "${apt.supervisorNote}"
+                <strong>Supervisor Remark:</strong> "${this.escapeHTML(apt.supervisorNote)}"
               </div>
             ` : ''}
           </div>
@@ -134,7 +143,7 @@
             <form id="bookAppointmentForm">
               <div class="form-group">
                 <label class="form-label">Assigned Academic Supervisor</label>
-                <input type="text" class="form-control" value="${supervisor ? supervisor.name : 'Prof. Marcus Sterling'}" readonly style="font-weight:600; color:var(--primary-blue);">
+                <input type="text" class="form-control" value="${this.escapeHTML(supervisor ? supervisor.name : 'Prof. Marcus Sterling')}" readonly style="font-weight:600; color:var(--primary-blue);">
               </div>
               <div class="form-group">
                 <label class="form-label">Meeting Agenda / Topic</label>
@@ -229,7 +238,7 @@
             <form id="rescheduleAptForm">
               <div class="form-group">
                 <label class="form-label">Student</label>
-                <input type="text" class="form-control" value="${apt.studentName} (${apt.topic})" readonly>
+                <input type="text" class="form-control" value="${this.escapeHTML(apt.studentName)} (${this.escapeHTML(apt.topic)})" readonly>
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <div class="form-group">
@@ -296,7 +305,7 @@
         target.dateUpdated = new Date().toISOString().split('T')[0];
         window.SSMSData.saveAppointments(allApts);
         this.renderAppointmentsPage('appointmentsContentArea');
-        window.SSMSApp.showNotification(`Appointment marked as ${newStatus}.`, 'info');
+        window.SSMSApp.showNotification(`Appointment marked as ${this.escapeHTML(newStatus)}.`, 'info');
       }
     }
   };

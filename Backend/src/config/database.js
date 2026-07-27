@@ -16,8 +16,7 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  enableKeepAlive: true,
-  keepAliveInitialDelayMs: 0
+  enableKeepAlive: true
 });
 
 // Test connection
@@ -28,6 +27,7 @@ pool.getConnection()
   })
   .catch((err) => {
     console.error('✗ Database connection failed:', err.message);
+    console.error('  Check Backend/.env DB_HOST, DB_USER, DB_PASSWORD, and DB_NAME values.');
     process.exit(1);
   });
 

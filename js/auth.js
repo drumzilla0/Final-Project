@@ -44,6 +44,20 @@
       localStorage.removeItem('ssms_pending_login');
     },
 
+    validateSession: async function() {
+      try {
+        const response = await window.SSMSApi.getMe();
+        if (response.success && response.user) {
+          localStorage.setItem('ssms_session', JSON.stringify(response.user));
+          return true;
+        }
+      } catch (error) {
+        // no-op
+      }
+      this.clearAuthStorage();
+      return false;
+    },
+
     login: async function(email, password) {
       const cleanEmail = email.trim().toLowerCase();
       const response = await window.SSMSApi.login(cleanEmail, password);

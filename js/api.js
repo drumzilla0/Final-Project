@@ -39,6 +39,10 @@
         body: options.body ? JSON.stringify(options.body) : undefined
       });
 
+      if (response.status === 401 || response.status === 403) {
+        window.SSMSAuth.clearAuthStorage();
+      }
+
       let payload;
       try {
         payload = await response.json();
