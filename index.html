@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!-- ==========================================================================
+   IDENTIFICATION: FRONT-END STRUCTURE (HTML5) - MAIN APPLICATION CONTAINER
+   PROJECT: STUDENT & SUPERVISOR PROJECT MANAGEMENT SYSTEM (SSMS)
+   AUTHOR: ANTIGRAVITY / DEEPMIND AGENTIC CODING
+   DESCRIPTION: Main DOM Structure, Responsive Shell, View Router Slots,
+                Header Navigation & External CSS/JS Resource Integration.
+   ========================================================================== -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student & Supervisor Project Management System (SSMS)</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- IDENTIFICATION: FRONT-END STYLING (CSS) EXTERNAL LINKS -->
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       SECTION 1: PUBLIC SECURE LOGIN OVERLAY (No Registration, Login Only)
+       PRIVACY DIRECTIVE: Supervisor, Student, & Admin lists hidden on front-view.
+       ========================================================================== -->
+  <div id="loginOverlay" class="auth-page-container">
+    <div id="authContainerArea"></div>
+  </div>
+
+  <!-- ==========================================================================
+       SECTION 2: AUTHENTICATED SYSTEM SHELL & NAVIGATION WRAPPER
+       ========================================================================== -->
+  <div id="appShellContainer" class="app-container" style="display: none;">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">P</div>
+        <div>
+          <div class="brand-text">SSMS PORTAL</div>
+          <div class="brand-subtitle">Thesis Tracker</div>
+        </div>
+      </div>
+
+      <nav id="sidebarNavContainer" class="sidebar-nav">
+        <!-- Injected dynamically based on user role by js/app.js -->
+      </nav>
+
+      <div id="userBadgeContainer" class="sidebar-footer">
+        <!-- User Profile & Logout Button Injected dynamically -->
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA WRAPPER -->
+    <div class="main-wrapper">
+      
+      <!-- TOP HEADER -->
+      <header class="top-header">
+        <div class="page-title-group">
+          <h1 id="headerTitle">Student & Supervisor Workspace</h1>
+          <p id="headerSubtitle">Department of Computer Science & Software Engineering</p>
+        </div>
+
+        <div class="header-actions">
+          <span style="font-size: 0.82rem; font-weight: 600; color: var(--primary-blue); background: var(--primary-blue-subtle); padding: 6px 14px; border-radius: var(--radius-full);">
+            Academic Year: 2026 / 2027
+          </span>
+          <span style="font-size: 0.82rem; font-weight: 600; color: var(--accent-orange); background: var(--accent-orange-subtle); padding: 6px 14px; border-radius: var(--radius-full);">
+            Status: Active Semester
+          </span>
+        </div>
+      </header>
+
+      <!-- DYNAMIC CONTENT VIEW CONTAINER -->
+      <main id="mainContentArea" class="content-body">
+        <!-- View screens (Tracker, Vault, Messages, Appointments, Admin) injected here -->
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- Modal Overlay Anchor -->
+  <div id="globalModalOverlay" class="modal-overlay"></div>
+
+  <!-- ==========================================================================
+       IDENTIFICATION: FRONT-END LOGIC (JAVASCRIPT) EXTERNAL SCRIPT MODULES
+       ========================================================================== -->
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/tracker.js"></script>
+  <script src="js/documents.js"></script>
+  <script src="js/messages.js"></script>
+  <script src="js/appointments.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
