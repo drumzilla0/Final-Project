@@ -26,7 +26,7 @@ class AuthController {
       if (users.length === 0) {
         return {
           success: false,
-          message: 'Invalid credentials. User not found.'
+          message: 'Invalid Student ID, Staff ID, or Email address. Account not found.'
         };
       }
 
@@ -44,7 +44,7 @@ class AuthController {
       if (!isPasswordValid) {
         return {
           success: false,
-          message: 'Incorrect password provided.'
+          message: 'Invalid password. Please check your password and try again.'
         };
       }
 

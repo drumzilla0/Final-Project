@@ -4,11 +4,27 @@
    DESCRIPTION: Initialize database with demo users
    ========================================================================== */
 
-const pool = require('./config/database');
+const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const seedDatabase = async () => {
+  const host = process.env.DB_HOST || 'localhost';
+  const port = process.env.DB_PORT || 3306;
+  const user = process.env.DB_USER || 'root';
+  const password = process.env.DB_PASSWORD || '';
+  const dbName = process.env.DB_NAME || 'ssms_db';
+
+  try {
+    const rootConn = await mysql.createConnection({ host, port, user, password });
+    await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+    await rootConn.end();
+  } catch (err) {
+    console.error('✗ Unable to connect to XAMPP MySQL server:', err.message);
+    process.exit(1);
+  }
+
+  const pool = require('./database');
   const conn = await pool.getConnection();
 
   try {

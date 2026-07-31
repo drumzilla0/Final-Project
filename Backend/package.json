@@ -4,14 +4,12 @@
   "description": "Backend API for Student & Supervisor Project Management System (SSMS)",
   "main": "src/server.js",
   "scripts": {
-    "start": "\"C:\\Program Files\\nodejs\\node.exe\" src/server.js",
-    "dev": "\"C:\\Program Files\\nodejs\\node.exe\" node_modules\\nodemon\\bin\\nodemon.js src/server.js",
-    "start-win": "start-win.cmd",
-    "dev-win": "dev-win.cmd",
-    "test": "jest",
-    "init-db": "init-db-win.cmd",
-    "seed": "seed-win.cmd",
-    "setup": "npm install && npm run init-db && npm run seed"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "init-db": "node src/config/initDatabase.js",
+    "seed": "node src/config/seedDatabase.js",
+    "setup": "npm run init-db && npm run seed",
+    "test": "jest"
   },
   "keywords": [
     "ssms",

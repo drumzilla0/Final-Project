@@ -48,12 +48,14 @@ const resolvers = {
     users: async (_, { role }) => {
       const conn = await pool.getConnection();
       let query = 'SELECT id, email, name, role, is_active, is_default_password, created_at, updated_at FROM users WHERE 1=1';
+      const params = [];
       
       if (role) {
-        query += ` AND role = '${role}'`;
+        query += ' AND role = ?';
+        params.push(role);
       }
 
-      const [users] = await conn.query(query);
+      const [users] = await conn.query(query, params);
       conn.release();
 
       return users.map(u => ({

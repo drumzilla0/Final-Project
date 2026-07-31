@@ -4,9 +4,29 @@
    DESCRIPTION: Creates all required tables and initializes the database
    ========================================================================== */
 
-const pool = require('./database');
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
 const initializeDatabase = async () => {
+  const host = process.env.DB_HOST || 'localhost';
+  const port = process.env.DB_PORT || 3306;
+  const user = process.env.DB_USER || 'root';
+  const password = process.env.DB_PASSWORD || '';
+  const dbName = process.env.DB_NAME || 'ssms_db';
+
+  try {
+    console.log(`Connecting to XAMPP MySQL server (${host}:${port})...`);
+    const rootConn = await mysql.createConnection({ host, port, user, password });
+    await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+    await rootConn.end();
+    console.log(`✓ Database '${dbName}' created/verified successfully in XAMPP.`);
+  } catch (err) {
+    console.error('✗ Unable to connect to XAMPP MySQL server:', err.message);
+    console.error('  Please ensure XAMPP Control Panel is open and MySQL is STARTED.');
+    process.exit(1);
+  }
+
+  const pool = require('./database');
   const conn = await pool.getConnection();
   
   try {

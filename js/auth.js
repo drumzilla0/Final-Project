@@ -12,7 +12,17 @@
   window.SSMSAuth = {
     getCurrentUser: function() {
       const session = localStorage.getItem('ssms_session');
-      return session ? JSON.parse(session) : null;
+      if (!session) return null;
+      let user = JSON.parse(session);
+      if (window.SSMSData) {
+        const users = window.SSMSData.getUsers();
+        const freshUser = users.find(u => u.id === user.id);
+        if (freshUser) {
+          user = freshUser;
+          localStorage.setItem('ssms_session', JSON.stringify(user));
+        }
+      }
+      return user;
     },
 
     getToken: function() {

@@ -40,7 +40,6 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title">
-              <span style="color: var(--accent-orange); font-size: 1.4rem;">📅</span>
               Meeting & Consultation Appointment Scheduler
             </div>
             ${currentUser.role === 'student' ? `
@@ -98,11 +97,11 @@
             </h4>
 
             <div style="font-size: 0.85rem; color: var(--text-dark); margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px;">
-              <div>👤 <strong>Student:</strong> ${this.escapeHTML(apt.studentName)}</div>
-              <div>🎓 <strong>Supervisor:</strong> ${this.escapeHTML(apt.supervisorName)}</div>
-              <div>📆 <strong>Date:</strong> <span style="color: var(--accent-orange); font-weight: 700;">${this.escapeHTML(apt.requestedDate)}</span></div>
-              <div>⏰ <strong>Time:</strong> <span style="font-weight: 700;">${this.escapeHTML(apt.requestedTime)}</span></div>
-              <div>📍 <strong>Venue / Link:</strong> ${this.escapeHTML(apt.venue)}</div>
+              <div><strong>Student:</strong> ${this.escapeHTML(apt.studentName)}</div>
+              <div><strong>Supervisor:</strong> ${this.escapeHTML(apt.supervisorName)}</div>
+              <div><strong>Date:</strong> <span style="color: var(--accent-orange); font-weight: 700;">${this.escapeHTML(apt.requestedDate)}</span></div>
+              <div><strong>Time:</strong> <span style="font-weight: 700;">${this.escapeHTML(apt.requestedTime)}</span></div>
+              <div><strong>Venue / Link:</strong> ${this.escapeHTML(apt.venue)}</div>
 
             ${apt.supervisorNote ? `
               <div style="margin-top: 10px; padding: 10px; background: var(--accent-orange-subtle); border-left: 3px solid var(--accent-orange); border-radius: 4px; font-size: 0.82rem; color: #8C4400;">
@@ -114,13 +113,13 @@
           ${isSupervisor ? `
             <div style="display: flex; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #E2E8F0;">
               <button class="btn btn-primary btn-sm" style="flex:1;" onclick="window.SSMSAppointments.updateStatus('${apt.id}', 'Confirmed')">
-                ✓ Confirm
+                Confirm
               </button>
               <button class="btn btn-outline btn-sm" style="flex:1;" onclick="window.SSMSAppointments.openRescheduleModal('${apt.id}')">
-                🔄 Reschedule
+                Reschedule
               </button>
               <button class="btn btn-danger btn-sm" onclick="window.SSMSAppointments.updateStatus('${apt.id}', 'Declined')">
-                ✕ Decline
+                Decline
               </button>
             </div>
           ` : ''}
@@ -136,7 +135,7 @@
       const modalHtml = `
         <div class="modal-card">
           <div class="modal-header">
-            <div class="modal-title">📅 Schedule Consultation Appointment</div>
+            <div class="modal-title">Schedule Consultation Appointment</div>
             <button onclick="window.SSMSApp.closeModal()" style="background:none; color:white; font-size:1.4rem;">&times;</button>
           </div>
           <div class="modal-body">
@@ -231,7 +230,7 @@
       const modalHtml = `
         <div class="modal-card">
           <div class="modal-header">
-            <div class="modal-title">🔄 Reschedule Appointment</div>
+            <div class="modal-title">Reschedule Appointment</div>
             <button onclick="window.SSMSApp.closeModal()" style="background:none; color:white; font-size:1.4rem;">&times;</button>
           </div>
           <div class="modal-body">

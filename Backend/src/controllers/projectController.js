@@ -47,22 +47,26 @@ class ProjectController {
         JOIN users u2 ON sup.user_id = u2.id
         WHERE 1=1
       `;
+      const params = [];
 
       // Role-based filtering
       if (role === 'student') {
-        query += ` AND p.student_id IN (SELECT id FROM students WHERE user_id = ${userId})`;
+        query += ' AND p.student_id IN (SELECT id FROM students WHERE user_id = ?)';
+        params.push(userId);
       } else if (role === 'supervisor') {
-        query += ` AND p.supervisor_id IN (SELECT id FROM supervisors WHERE user_id = ${userId})`;
+        query += ' AND p.supervisor_id IN (SELECT id FROM supervisors WHERE user_id = ?)';
+        params.push(userId);
       }
 
       // Additional filters
       if (filters.status) {
-        query += ` AND p.status = '${filters.status}'`;
+        query += ' AND p.status = ?';
+        params.push(filters.status);
       }
 
-      query += ` ORDER BY p.created_at DESC`;
+      query += ' ORDER BY p.created_at DESC';
 
-      const [projects] = await conn.query(query);
+      const [projects] = await conn.query(query, params);
       conn.release();
 
       return {

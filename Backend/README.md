@@ -8,17 +8,17 @@ The SSMS Backend provides a comprehensive REST API and GraphQL endpoint for mana
 
 ## Features
 
-- ✅ JWT Authentication & Authorization
-- ✅ Role-based Access Control (Admin, Supervisor, Student)
-- ✅ Project Management (CRUD operations)
-- ✅ Document Vault with versioning
-- ✅ Real-time Messaging System
-- ✅ Appointment Scheduling
-- ✅ Progress Tracking
-- ✅ GraphQL API
-- ✅ REST API
-- ✅ MySQL Database Integration
-- ✅ Error Handling & Logging
+- JWT Authentication & Authorization
+- Role-based Access Control (Admin, Supervisor, Student)
+- Project Management (CRUD operations)
+- Document Vault with versioning
+- Real-time Messaging System
+- Appointment Scheduling
+- Progress Tracking
+- GraphQL API
+- REST API
+- MySQL Database Integration
+- Error Handling & Logging
 
 ## Tech Stack
 
@@ -232,12 +232,12 @@ All endpoints return consistent error responses:
 
 ## Security Features
 
-- ✅ Password hashing with bcryptjs
-- ✅ JWT token-based authentication
-- ✅ CORS protection
-- ✅ Rate limiting on API routes
-- ✅ Helmet.js for HTTP headers
-- ✅ SQL prepared statements (prevent SQL injection)
+- Password hashing with bcryptjs
+- JWT token-based authentication
+- CORS protection
+- Rate limiting on API routes
+- Helmet.js for HTTP headers
+- SQL prepared statements (prevent SQL injection)
 
 ## Development
 
