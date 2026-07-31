@@ -107,22 +107,22 @@
           </div>
           <div class="auth-body">
             <form id="loginForm">
-              <div id="loginErrorAlert" class="alert-box alert-error" style="display: none; margin-bottom: 16px; font-size: 0.88rem;"></div>
+              <div id="loginErrorAlert" class="alert-box alert-error modal-alert--small" style="display: none;"></div>
               <div class="form-group">
                 <label class="form-label">Student ID / Staff ID / Email Address</label>
                 <input type="text" id="loginEmail" class="form-control" placeholder="e.g. 04/2023/0001D or BT04/2023/0001D or Asare002sid@ktu.edu.gh" required autofocus>
               </div>
               <div class="form-group">
                 <label class="form-label">Password</label>
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required style="flex:1;">
-                  <button type="button" id="togglePasswordBtn" class="btn btn-outline btn-sm" aria-label="Show password" style="padding: 10px 12px; white-space: nowrap;">Show</button>
+                <div class="modal-row">
+                  <input type="password" id="loginPassword" class="form-control modal-input-flex" placeholder="••••••••" required>
+                  <button type="button" id="togglePasswordBtn" class="btn btn-outline btn-sm modal-button-small" aria-label="Show password">Show</button>
                 </div>
-                <div style="display:flex; justify-content:flex-end; margin-top:6px;">
-                  <a href="#" onclick="window.SSMSApp.openForgotPasswordModal(); return false;" style="font-size:0.82rem; color:var(--primary-blue); font-weight:600; text-decoration:underline;">Forgot Password?</a>
+                <div class="modal-row-end">
+                  <a href="#" onclick="window.SSMSApp.openForgotPasswordModal(); return false;" class="modal-link">Forgot Password?</a>
                 </div>
               </div>
-              <button type="submit" class="btn btn-accent" style="width: 100%; padding: 12px; margin-top: 10px; font-weight: 700;">
+              <button type="submit" class="btn btn-accent modal-button-full">
                 Secure Portal Login →
               </button>
             </form>
@@ -210,10 +210,10 @@
         <div class="modal-card">
           <div class="modal-header">
             <div class="modal-title">Password Reset Request</div>
-            <button onclick="window.SSMSApp.closeModal()" style="background:none; color:white; font-size:1.4rem;">&times;</button>
+            <button onclick="window.SSMSApp.closeModal()" class="btn-close">&times;</button>
           </div>
           <div class="modal-body">
-            <div class="alert-box alert-warning" style="font-size:0.85rem; margin-bottom: 16px;">
+            <div class="alert-box alert-warning modal-alert--small">
               If you forgot your password or had 3+ failed attempts, enter your Student ID, Staff ID, or Email below. A <strong>Password Reset Request</strong> will be sent directly to the Admin / HOD.
             </div>
             <form id="forgotPasswordForm">
@@ -221,7 +221,7 @@
                 <label class="form-label">Student ID / Staff ID / Email Address</label>
                 <input type="text" id="forgotIdInput" class="form-control" value="${this.escapeHTML(initialVal)}" placeholder="e.g. 04/2023/0001D or BT04/2023/0001D or Asare002sid@ktu.edu.gh" required autofocus>
               </div>
-              <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+              <div class="modal-row-end">
                 <button type="button" class="btn btn-outline" onclick="window.SSMSApp.closeModal()">Cancel</button>
                 <button type="submit" class="btn btn-accent">Send Reset Request to HOD</button>
               </div>
@@ -270,7 +270,7 @@
               <p style="font-size:0.88rem; color:var(--text-dark); margin-bottom: 14px;">
                 Once the HOD resets your password back to default (<code>${defaultPass}</code>), log in using <code>${defaultPass}</code>. You will then be prompted to create your new secret password.
               </p>
-              <div style="display:flex; justify-content:flex-end;">
+              <div class="modal-row-end">
                 <button class="btn btn-primary" onclick="window.SSMSApp.closeModal();">Got it →</button>
               </div>
             </div>

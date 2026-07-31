@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<!-- ==========================================================================
+<!-- 
    IDENTIFICATION: FRONT-END STRUCTURE (HTML5) - MAIN APPLICATION CONTAINER
    PROJECT: STUDENT & SUPERVISOR PROJECT MANAGEMENT SYSTEM (SSMS)
    AUTHOR: ANTIGRAVITY / DEEPMIND AGENTIC CODING
    DESCRIPTION: Main DOM Structure, Responsive Shell, View Router Slots,
-                Header Navigation & External CSS/JS Resource Integration.
-   ========================================================================== -->
+                Header Navigation & External CSS/JS Resource Integration. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -23,18 +22,18 @@
 </head>
 <body>
 
-  <!-- ==========================================================================
+  <!-- 
        SECTION 1: PUBLIC SECURE LOGIN OVERLAY (No Registration, Login Only)
        PRIVACY DIRECTIVE: Supervisor, Student, & Admin lists hidden on front-view.
-       ========================================================================== -->
+        -->
   <div id="loginOverlay" class="auth-page-container">
     <div id="authContainerArea"></div>
   </div>
 
-  <!-- ==========================================================================
+  <!-- 
        SECTION 2: AUTHENTICATED SYSTEM SHELL & NAVIGATION WRAPPER
-       ========================================================================== -->
-  <div id="appShellContainer" class="app-container" style="display: none;">
+       -->
+  <div id="appShellContainer" class="app-container hidden-shell">
 
     <!-- SIDEBAR NAVIGATION -->
     <aside class="sidebar">
@@ -65,12 +64,8 @@
         </div>
 
         <div class="header-actions">
-          <span style="font-size: 0.82rem; font-weight: 600; color: var(--primary-blue); background: var(--primary-blue-subtle); padding: 6px 14px; border-radius: var(--radius-full);">
-            Academic Year: 2026 / 2027
-          </span>
-          <span style="font-size: 0.82rem; font-weight: 600; color: var(--accent-orange); background: var(--accent-orange-subtle); padding: 6px 14px; border-radius: var(--radius-full);">
-            Status: Active Semester
-          </span>
+          <span class="header-pill header-pill--year">Academic Year: 2026 / 2027</span>
+          <span class="header-pill header-pill--status">Status: Active Semester</span>
         </div>
       </header>
 
@@ -86,9 +81,9 @@
   <!-- Modal Overlay Anchor -->
   <div id="globalModalOverlay" class="modal-overlay"></div>
 
-  <!-- ==========================================================================
+  <!-- 
        IDENTIFICATION: FRONT-END LOGIC (JAVASCRIPT) EXTERNAL SCRIPT MODULES
-       ========================================================================== -->
+       -->
   <script src="js/data.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
